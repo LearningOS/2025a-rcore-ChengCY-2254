@@ -145,6 +145,7 @@ pub fn run_next_app() -> ! {
         fn __restore(cx_addr: usize);
     }
     unsafe {
+        //restore会恢复特权级和寄存器，所以加载进去的app可以直接执行，这个函数也永远不会返回，因为已经换到用户栈了，用户退出后
         __restore(KERNEL_STACK.push_context(TrapContext::app_init_context(
             APP_BASE_ADDRESS,
             USER_STACK.get_sp(),

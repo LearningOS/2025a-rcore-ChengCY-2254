@@ -1,8 +1,11 @@
 .altmacro
+# 按照约定，函数参数是通过a系列寄存器传递
 .macro SAVE_SN n
+    # a0是current_task_cx_ptr
     sd s\n, (\n+2)*8(a0)
 .endm
 .macro LOAD_SN n
+    # a1是next_task_cx_ptr
     ld s\n, (\n+2)*8(a1)
 .endm
     .section .text

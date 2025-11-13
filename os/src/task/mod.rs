@@ -138,15 +138,17 @@ impl TaskManager {
     }
     /// 统计一个任务的系统调用次数
     fn sys_trace_counter(&self, syscall_id: usize) {
-        let jobs = self.inner.exclusive_access();
-        let mut job = jobs.tasks[jobs.current_task];
-        job.task_trace[syscall_id] += 1;
+        let mut jobs = self.inner.exclusive_access();
+        let current_task = jobs.current_task;
+        let job = &mut jobs.tasks[current_task];
+        job.task_counter(syscall_id);
     }
     /// 获取一个任务的系统调用次数
-    fn sys_job_counter(&self, syscall_id: usize) ->usize{
+    fn sys_job_counter(&self, syscall_id: usize) -> usize {
         let jobs = self.inner.exclusive_access();
         let job = jobs.tasks[jobs.current_task];
-        job.task_trace[syscall_id]
+        let count = job.task_trace[syscall_id];
+        count
     }
 }
 
@@ -188,6 +190,8 @@ pub fn sys_trace_counter(syscall_id: usize) {
     TASK_MANAGER.sys_trace_counter(syscall_id);
 }
 /// 返回当前任务对应系统调用次数
-pub fn sys_job_counter(syscall_id: usize) ->usize{
-    TASK_MANAGER.sys_job_counter(syscall_id)
+pub fn sys_job_counter(syscall_id: usize) -> usize {
+    let counter = TASK_MANAGER.sys_job_counter(syscall_id);
+    println!("{}:{}", syscall_id, counter);
+    counter
 }
